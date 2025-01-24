@@ -1,0 +1,19 @@
+# Node modules
+node_modules
+
+# Build outputs
+dist
+build
+
+# Environment files
+# .env left in for reference
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+# VS Code
+.vscode
+
+# Ignore package-lock.json
+package-lock.json

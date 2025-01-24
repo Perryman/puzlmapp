@@ -1,0 +1,35 @@
+{
+    "name": "puzlmapp",
+    "version": "0.0.1",
+    "main": "server/index.js",
+    "scripts": {
+    "start": "docker-compose -f docker-compose.yml up --build -d",
+    "stop": "docker-compose -f docker-compose.yml down",
+    "dev:start": "docker-compose -f docker-compose.yml -f docker-compose-dev.yml up --build -d",
+    "dev:stop": "docker-compose -f docker-compose.yml -f docker-compose-dev.yml down",
+    "logs": "docker-compose logs -f",
+    "logs:backend": "docker logs -f puzlmapp-backend",
+    "logs:frontend": "docker logs -f puzlmapp-frontend",
+    "logs:db": "docker logs -f puzzlemapp-db",
+    "docker:up:db": "env-cmd -f .env docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d db",
+    "docker:wait:db": "env-cmd -f .env bash -c 'echo \"Waiting for PostgreSQL to be ready...\"; count=0; start=$(date +%s); until [ \"$(docker inspect -f {{.State.Health.Status}} puzzlemapp-db)\" == \"healthy\" ]; do echo -n \".\"; sleep 1; count=$((count+1)); done; end=$(date +%s); echo \"PostgreSQL is ready! Waited $count seconds.\"'",
+    "docker:exec:schema": "env-cmd -f .env sh -c 'docker exec -i puzzlemapp-db psql -U \"$DB_USER\" -d \"$DB_NAME\" -f /docker-entrypoint-initdb.d/schema.sql'",
+    "docker:init": "npm run docker:up:db && npm run docker:wait:db && npm run docker:exec:schema",
+    "docker:clean": "docker-compose down -v --remove-orphans && docker-compose rm -f",
+    "fresh:start": "npm run docker:clean && npm install && npm run dev:start && npm run docker:init",
+    "dev": "npm run docker:clean && npm install && npm run dev:start && npm run docker:init",
+    "dbstat": "env-cmd -f .env sh -c 'docker exec -it puzzlemapp-db psql -U puzzlemapp_user -d puzzlemapp -c \"\\l\" && docker exec -it puzzlemapp-db psql -U puzzlemapp_user -d puzzlemapp -c \"\\dn\" && docker exec -it puzzlemapp-db psql -U puzzlemapp_user -d puzzlemapp -c \"\\du\"'",
+    "dbinfo": "env-cmd -f .env sh -c 'docker exec -it puzzlemapp-db psql -U puzzlemapp_user -d puzzlemapp -c \"\\dn; \\dt; \\du;\"'",
+    "dbschema": "env-cmd -f .env sh -c 'docker exec -it puzzlemapp-db psql -U puzzlemapp_user -d puzzlemapp -c \"\\d texts\"'",
+    "dbdump": "env-cmd -f .env sh -c 'docker exec -it puzzlemapp-db psql -U puzzlemapp_user -d puzzlemapp -c \"SELECT * FROM texts;\"'"
+    },
+    "dependencies": {
+        "dotenv": "^16.0.0",
+        "express": "^4.18.0",
+        "pg": "^8.10.0"
+    },
+    "devDependencies": {
+        "env-cmd": "^10.1.0",
+        "vite": "^6.0.11"
+    }
+}

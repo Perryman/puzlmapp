@@ -1,0 +1,10 @@
+body {
+    font-family: 'Lucida Console', 'Helvetica', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+}
+
+p, h1, h2, h3, h4, h5, h6, li, a {
+    font-family: 'Lucida Console', 'Helvetica', sans-serif;
+}
